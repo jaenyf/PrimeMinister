@@ -1,4 +1,4 @@
-# Prime Minister
+# Primes Minister
 
 ## Playground for prime and non-prime numbers
 
