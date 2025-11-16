@@ -27,12 +27,21 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // Check if a number is prime
-function isPrime(num) {
+function _isPrime(num) {
     if (num < 2) return num == 1 ? true : false;
     for (let i = 2; i <= Math.sqrt(num); i++) {
         if (num % i === 0) return false;
     }
     return true;
+}
+
+const primeCache = new Map();
+// Check if a number is prime with caching
+function checkIsPrime(n) {
+    if (primeCache.has(n)) return primeCache.get(n);
+    let result = _isPrime(n);
+    primeCache.set(n, result);
+    return result;
 }
 
 // Calculates the root according to the selected type
@@ -65,7 +74,7 @@ function generateGraph(start, end, type) {
         parent: null,
         x: 0,
         y: 0,
-        isPrime: isPrime(value),
+        isPrime: checkIsPrime(value),
     });
 
     const rootNode = createNode(rootValue);
