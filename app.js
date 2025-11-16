@@ -358,6 +358,11 @@ canvas.addEventListener('mousemove', (e) => {
         tooltip.style.left = `${e.clientX + 10}px`;  // Position of the tooltip next to the cursor
         tooltip.style.top = `${e.clientY + 10}px`;
         tooltip.innerText = `${lineHovered.from.value} to ${lineHovered.to.value}`;
+        if (lineHovered.from.isPrime && lineHovered.to.isPrime) {
+            tooltip.classList.add('primes');
+        } else {
+            tooltip.classList.remove('primes');
+        }
         tooltip.style.display = 'block';
     } else {
         //  Hide the tooltip if no line is hovered over
