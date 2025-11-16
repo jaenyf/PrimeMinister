@@ -79,6 +79,12 @@
             background-color: #e0e0e0;
         }
 
+        /* Color change of the centering button when locked */
+        .locked {
+            color: orange;
+        }
+
+
     </style>
 </head>
 
@@ -98,6 +104,7 @@
         <canvas id="graphCanvas"></canvas>
         <!-- Zoom and center buttons -->
         <div id="zoom-controls">
+            <button id="centerBtn" class="zoom-btn locked">⟷</button>
             <button id="zoomInBtn" class="zoom-btn">+</button>
             <button id="zoomOutBtn" class="zoom-btn">−</button>
         </div>

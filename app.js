@@ -5,6 +5,7 @@ const endInput = document.getElementById('end');
 const typeSelect = document.getElementById('type');
 const zoomInBtn = document.getElementById('zoomInBtn');
 const zoomOutBtn = document.getElementById('zoomOutBtn');
+const centerBtn = document.getElementById('centerBtn');
 
 let nodes = [];
 let edges = [];
@@ -206,10 +207,35 @@ function centerGraphWithoutDrawing() {
     panY = newPanY;
 }
 
+// Center the graph
+function toggleCentering() {
+    if (isCenteringLocked()) {
+        unlockCentering();
+    } else {
+        lockCentering();
+    }
+
+    refreshGraph();
+}
+
+function isCenteringLocked() {
+    return !manualTransform;
+}
+
+function unlockCentering() {
+    manualTransform = true;
+    centerBtn.classList.remove('locked');
+}
+
+function lockCentering() {
+    manualTransform = false;
+    centerBtn.classList.add('locked');
+}
 
 
 // Zooming in
 function zoomIn() {
+    unlockCentering();
     let zoomFactor = 1.1;
     zoom *= zoomFactor;
     drawGraph();
@@ -217,6 +243,7 @@ function zoomIn() {
 
 // Zooming out
 function zoomOut() {
+    unlockCentering();
     let zoomFactor = 1.1;
     zoom /= zoomFactor;
     drawGraph();
@@ -235,7 +262,7 @@ zoomOutBtn.addEventListener('click', () => {
 canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
 
-    manualTransform = true; // User has manually zoomed
+    unlockCentering();
 
     const mouseX = e.clientX;
     const mouseY = e.clientY;
@@ -255,11 +282,14 @@ canvas.addEventListener('wheel', (e) => {
 
     drawGraph();
 });
+
+centerBtn.addEventListener('click', toggleCentering);
+
 canvas.addEventListener('mousemove', (e) => {
     if (isPanning) {
         panX = e.clientX - panXStart * zoom;
         panY = e.clientY - panYStart * zoom;
-        manualTransform = true; // User has manually panned
+        unlockCentering();
     }
     drawGraph();
 });
