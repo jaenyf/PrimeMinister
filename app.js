@@ -10,6 +10,7 @@ const zoomInBtn = document.getElementById('zoomInBtn');
 const zoomOutBtn = document.getElementById('zoomOutBtn');
 const centerBtn = document.getElementById('centerBtn');
 
+let needsRedraw = true;
 let nodes = [];
 let edges = [];
 let zoom = 1;
@@ -233,7 +234,7 @@ function toggleCentering() {
         lockCentering();
     }
 
-    refreshGraph();
+    scheduleRedraw();
 }
 
 function isCenteringLocked() {
@@ -256,7 +257,7 @@ function zoomIn() {
     unlockCentering();
     let zoomFactor = 1.1;
     zoom *= zoomFactor;
-    drawGraph();
+    scheduleRedraw();
 }
 
 // Zooming out
@@ -264,7 +265,7 @@ function zoomOut() {
     unlockCentering();
     let zoomFactor = 1.1;
     zoom /= zoomFactor;
-    drawGraph();
+    scheduleRedraw();
 }
 
 // Check if mouse is on a given line segment
@@ -323,7 +324,7 @@ canvas.addEventListener('wheel', (e) => {
     panX = mouseX - cursorX * zoom;
     panY = mouseY - cursorY * zoom;
 
-    drawGraph();
+    scheduleRedraw();
 });
 
 centerBtn.addEventListener('click', toggleCentering);
@@ -369,7 +370,7 @@ canvas.addEventListener('mousemove', (e) => {
         tooltip.style.display = 'none';
     }
 
-    drawGraph();
+    scheduleRedraw();
 });
 
 canvas.addEventListener('mouseup', () => {
@@ -385,18 +386,18 @@ canvas.addEventListener('mousedown', (e) => {
 });
 
 
-startInput.addEventListener('input', () => refreshGraph());
-endInput.addEventListener('input', () => refreshGraph());
-typeSelect.addEventListener('change', () => refreshGraph());
+startInput.addEventListener('input', () => scheduleRedraw());
+endInput.addEventListener('input', () => scheduleRedraw());
+typeSelect.addEventListener('change', () => scheduleRedraw());
 
 nodesDisplayTypeSelect.addEventListener('change', (e) => {
     nodesDisplayType = e.target.value;
-    refreshGraph();
+    scheduleRedraw();
 });
 
 edgesDisplayTypeSelect.addEventListener('change', (e) => {
     edgesDisplayType = e.target.value;
-    refreshGraph();
+    scheduleRedraw();
 });
 
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -404,22 +405,22 @@ canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 document.getElementById('startMultiplierBtn').addEventListener('click', () => {
     let currentValue = parseInt(startInput.value);
     startInput.value = currentValue * 2;
-    refreshGraph();
+    scheduleRedraw();
 });
 document.getElementById('startDividerBtn').addEventListener('click', () => {
     let currentValue = parseInt(startInput.value);
     startInput.value = currentValue / 2;
-    refreshGraph();
+    scheduleRedraw();
 });
 document.getElementById('endMultiplierBtn').addEventListener('click', () => {
     let currentValue = parseInt(endInput.value);
     endInput.value = currentValue * 2;
-    refreshGraph();
+    scheduleRedraw();
 });
 document.getElementById('endDividerBtn').addEventListener('click', () => {
     let currentValue = parseInt(endInput.value);
     endInput.value = currentValue / 2;
-    refreshGraph();
+    scheduleRedraw();
 });
 
 function refreshGraph() {
@@ -433,5 +434,17 @@ function refreshGraph() {
     drawGraph();
 }
 
+function scheduleRedraw() {
+    needsRedraw = true;
+}
+
+function renderLoop() {
+    if (needsRedraw) {
+        refreshGraph();
+        needsRedraw = false;
+    }
+    requestAnimationFrame(renderLoop);
+}
+
 // Initial generation
-refreshGraph();
+renderLoop();
