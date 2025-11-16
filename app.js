@@ -396,6 +396,27 @@ edgesDisplayTypeSelect.addEventListener('change', (e) => {
 
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
+document.getElementById('startMultiplierBtn').addEventListener('click', () => {
+    let currentValue = parseInt(startInput.value);
+    startInput.value = currentValue * 2;
+    refreshGraph();
+});
+document.getElementById('startDividerBtn').addEventListener('click', () => {
+    let currentValue = parseInt(startInput.value);
+    startInput.value = currentValue / 2;
+    refreshGraph();
+});
+document.getElementById('endMultiplierBtn').addEventListener('click', () => {
+    let currentValue = parseInt(endInput.value);
+    endInput.value = currentValue * 2;
+    refreshGraph();
+});
+document.getElementById('endDividerBtn').addEventListener('click', () => {
+    let currentValue = parseInt(endInput.value);
+    endInput.value = currentValue / 2;
+    refreshGraph();
+});
+
 function refreshGraph() {
     const start = parseInt(startInput.value);
     const end = parseInt(endInput.value);

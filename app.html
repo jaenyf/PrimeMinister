@@ -103,13 +103,22 @@
 <body>
 
     <div id="form-container">
-        <input type="number" id="start" value="1" min="0" placeholder="Start">
-        <input type="number" id="end" value="15" min="0" placeholder="End">
+        <label for="type">Graph type :</label>
         <select id="type">
             <option value="Zero">Zero</option>
             <option value="Odd" selected>Odd</option>
             <option value="Even">Even</option>
         </select>
+        <br>
+        <label for="start">Start :</label>
+        <input type="number" id="start" value="1" min="0" placeholder="Start">
+        <input type="button" id="startMultiplierBtn" title="Multiply start by 2" value="x2">
+        <input type="button" id="startDividerBtn" title="Divide start by 2" value="%2">
+        <br>
+        <label for="end">End :</label>
+        <input type="number" id="end" value="15" min="0" placeholder="End">
+        <input type="button" id="endMultiplierBtn" title="Multiply end by 2" value="x2">
+        <input type="button" id="endDividerBtn" title="Divide end by 2" value="%2">
         <br>
         <label for="nodesDisplayType">Display nodes :</label>
         <select id="nodesDisplayType">
