@@ -5,6 +5,7 @@ const startInput = document.getElementById('start');
 const endInput = document.getElementById('end');
 const typeSelect = document.getElementById('type');
 const nodesDisplayTypeSelect = document.getElementById('nodesDisplayType');
+const edgesDisplayTypeSelect = document.getElementById('edgesDisplayType');
 const zoomInBtn = document.getElementById('zoomInBtn');
 const zoomOutBtn = document.getElementById('zoomOutBtn');
 const centerBtn = document.getElementById('centerBtn');
@@ -19,6 +20,7 @@ let panXStart = 0, panYStart = 0;
 let manualTransform = false;    // indicates whether the user has zoomed or panned
 let nodeRadius = 20;
 let nodesDisplayType = 'All'; // 'All', 'Primes', 'NonPrimes', 'None'
+let edgesDisplayType = 'All'; // 'All', 'Primes', 'NonPrimes', 'None'
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -145,6 +147,12 @@ function drawGraph() {
     edges.forEach(edge => {
 
         const bothPrime = edge.from.isPrime && edge.to.isPrime;
+
+        if (edgesDisplayType === 'Primes' && !bothPrime) return;
+        if (edgesDisplayType === 'NonPrimes' && bothPrime) return;
+        if (edgesDisplayType === 'None') return;
+
+        
         const edgeColor = bothPrime ? '#f80' : '#000';
 
         ctx.beginPath();
@@ -381,6 +389,10 @@ nodesDisplayTypeSelect.addEventListener('change', (e) => {
     refreshGraph();
 });
 
+edgesDisplayTypeSelect.addEventListener('change', (e) => {
+    edgesDisplayType = e.target.value;
+    refreshGraph();
+});
 
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
