@@ -141,7 +141,9 @@ function drawGraph() {
 
     // Drawing edges
     edges.forEach(edge => {
-        const edgeColor = '#000';
+
+        const bothPrime = edge.from.isPrime && edge.to.isPrime;
+        const edgeColor = bothPrime ? '#f80' : '#000';
 
         ctx.beginPath();
         ctx.moveTo(edge.from.x * zoom + panX, edge.from.y * zoom + panY);
