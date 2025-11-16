@@ -1,5 +1,6 @@
 const canvas = document.getElementById('graphCanvas');
 const ctx = canvas.getContext('2d');
+const tooltip = document.getElementById('tooltip');
 const startInput = document.getElementById('start');
 const endInput = document.getElementById('end');
 const typeSelect = document.getElementById('type');
@@ -249,6 +250,31 @@ function zoomOut() {
     drawGraph();
 }
 
+// Check if mouse is on a given line segment
+function isMouseOnLine(mx, my, x1, y1, x2, y2, zoomLevel = 1) {
+    // Linear interpolation function
+    function lerp(a, b, t) { return a + t * (b - a); }
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const lengthSq = dx * dx + dy * dy;
+    if (lengthSq === 0) return false; // segment nul
+
+    // Projection du point sur la ligne
+    const t = ((mx - x1) * dx + (my - y1) * dy) / lengthSq;
+
+    // Verify that the projected point is indeed on the segment
+    if (t < 0 || t > 1) return false;
+
+    // Coordinates of the point projected onto the segment
+    const lineX = lerp(x1, x2, t);
+    const lineY = lerp(y1, y2, t);
+
+    // Distance to mouse
+    const distance = Math.sqrt((mx - lineX) ** 2 + (my - lineY) ** 2);
+    return distance < (5 / zoomLevel); // tolerance
+}
+
 // Zoom and center button events
 zoomInBtn.addEventListener('click', () => {
     manualTransform = true;
@@ -286,11 +312,41 @@ canvas.addEventListener('wheel', (e) => {
 centerBtn.addEventListener('click', toggleCentering);
 
 canvas.addEventListener('mousemove', (e) => {
+
+    const mouseX = (e.clientX - panX) / zoom;
+    const mouseY = (e.clientY - panY) / zoom;
+
     if (isPanning) {
         panX = e.clientX - panXStart * zoom;
         panY = e.clientY - panYStart * zoom;
         unlockCentering();
     }
+
+    let lineHovered = null;
+    // Check if the mouse is on one of the edges
+    for (let edge of edges) {
+        const x1 = edge.from.x;
+        const y1 = edge.from.y;
+        const x2 = edge.to.x;
+        const y2 = edge.to.y;
+
+        if (isMouseOnLine(mouseX, mouseY, x1, y1, x2, y2, zoom)) {
+            lineHovered = edge;
+            break;
+        }
+    }
+
+    if (lineHovered) {
+        // Displaying the tooltip
+        tooltip.style.left = `${e.clientX + 10}px`;  // Position of the tooltip next to the cursor
+        tooltip.style.top = `${e.clientY + 10}px`;
+        tooltip.innerText = `${lineHovered.from.value} to ${lineHovered.to.value}`;
+        tooltip.style.display = 'block';
+    } else {
+        //  Hide the tooltip if no line is hovered over
+        tooltip.style.display = 'none';
+    }
+
     drawGraph();
 });
 
