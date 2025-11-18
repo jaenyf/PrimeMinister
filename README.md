@@ -6,6 +6,17 @@ This small project aims to graphically represent prime numbers within a set of n
 
 A sober **map-style** UI is used to render the graph that you can **zoom** and **pan**, either with your mouse or with UI controls.
 
+### Usage :
+```console
+npm install
+npm run dev
+```
+
+### Test :
+```console
+npm run test
+```
+
 ### For example :
 
 You can display a graph showing edges and nodes that differentiates primes and non-primes.
