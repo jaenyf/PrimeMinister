@@ -22,7 +22,7 @@ export function arrangeNodes() {
         }
     }
 
-    const maxDepth = levels.length;
+    const maxDepth = Math.max(levels.length, 2);
     levels.forEach((levelNodes, i) => {
         const y = V_MARGIN + i * ((canvas.height - 2 * V_MARGIN) / (maxDepth - 1));
         levelNodes.forEach(n => n.y = y);
