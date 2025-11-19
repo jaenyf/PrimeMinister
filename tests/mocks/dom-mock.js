@@ -1,7 +1,7 @@
 import { createMockCanvas } from "./canvas-mock.js";
 
 export function installMockDOM() {
-     const graphCanvasMock = createMockCanvas();
+    const graphCanvasMock = createMockCanvas();
 
     // Keep references to the real DOM helpers so tests can still set
     // `document.body.innerHTML` or load `index.html` and rely on real
