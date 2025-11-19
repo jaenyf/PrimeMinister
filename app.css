@@ -1,4 +1,11 @@
 body {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    grid-template-areas:
+        "main"
+        "footer";
+    min-height: 100vh;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -6,6 +13,7 @@ body {
 }
 
 #container {
+    grid-area: main;
     width: 100vw;
     height: 100vh;
     position: relative;
@@ -20,13 +28,52 @@ body {
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-auto-rows: auto;
+}
+
+#form-container label {
+    justify-self: end;
+    padding-right: 8px;
+    white-space: nowrap;
 }
 
 #form-container input,
 #form-container select,
 #form-container button {
-    margin: 5px;
-    padding: 5px;
+    margin: 0;
+    padding: 6px 8px;
+    justify-self: start;
+    min-width: 0;
+}
+
+#form-container,
+#form-container input,
+#form-container select,
+#form-container button {
+    font-size: 12px;
+}
+
+#form-container input,
+#form-container select,
+#form-container button {
+    padding: 2px 2px;
+    line-height: 1.1;
+    height: 22px;
+    font-size: 12px;
+}
+
+#form-container {
+    gap: 4px 6px;
+}
+
+/* Grouped inline controls (number + small buttons) */
+.control-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 canvas {
@@ -52,7 +99,7 @@ canvas {
 
 /* Zoom buttons at the bottom right */
 #zoom-controls {
-    position: absolute;
+    position: fixed;
     bottom: 30px;
     right: 30px;
     display: flex;

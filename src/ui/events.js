@@ -156,4 +156,10 @@ export function setupEventHandlers(ui, graphState) {
     };
 
     canvas.oncontextmenu = (e) => e.preventDefault();
+
+    window.onresize = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        scheduleRedraw(true);
+    }
 }
