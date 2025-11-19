@@ -1,6 +1,6 @@
 # Primes Minister
 
-[![CI](https://github.com/jaenyf/PrimesMinister/actions/workflows/ci.yml/badge.svg?branch=vite-modules)](https://github.com/jaenyf/PrimesMinister/actions/workflows/ci.yml)
+[![CI](https://github.com/jaenyf/PrimesMinister/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jaenyf/PrimesMinister/actions/workflows/ci.yml)
 
 ## Playground for prime and non-prime numbers
 
