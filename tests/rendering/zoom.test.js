@@ -1,4 +1,4 @@
-import { createTestState } from "../mocks/state-mock.js";
+import { createGraphState } from "../../src/core/state.js";
 import { zoomAt } from "../../src/rendering/zoom.js";
 
 describe.each([
@@ -8,13 +8,13 @@ describe.each([
 ])("zoomAt $a", ({ factor, expected }) => {
     it("applies zoom", () => {
         // Arrange
-        const state = createTestState();
+        const state = createGraphState();
         state.zoom = 0.5;
         const mouseX = 200;
         const mouseY = 150;
 
         // Act
-        zoomAt(mouseX, mouseY, factor);
+        zoomAt(mouseX, mouseY, factor, state);
 
         // Assert
         expect(state.zoom).toBe(expected);

@@ -1,6 +1,7 @@
 import { createMockCanvas } from "./canvas-mock.js";
+// import { queryUI } from "../../src/ui/dom.js";
 
-export function installMockDOM() {
+export function queryUIMock(graphState) {
     const graphCanvasMock = createMockCanvas();
 
     // Keep references to the real DOM helpers so tests can still set
@@ -29,4 +30,28 @@ export function installMockDOM() {
         }
         return realCreateElement(tagName);
     }
+
+    //const ui = queryUI(graphState);
+
+    const uiObj = {
+        canvas: graphCanvasMock,
+        ctx: graphCanvasMock.getContext ? graphCanvasMock.getContext("2d") : null,
+        tooltip: null,
+        startInput: { value: "", oninput: null },
+        endInput: { value: "", oninput: null },
+        typeSelect: { value: "", onchange: null },
+        nodesDisplayTypeSelect: { onchange: null },
+        edgesDisplayTypeSelect: { onchange: null },
+        zoomInBtn: { onclick: null },
+        zoomOutBtn: { onclick: null },
+        centerBtn: { onclick: null },
+        startMultiplierBtn: { onclick: null },
+        startDividerBtn: { onclick: null },
+        endMultiplierBtn: { onclick: null },
+        endDividerBtn: { onclick: null }
+    };
+
+    //ui.canvas = graphCanvasMock;
+
+    return uiObj;
 }

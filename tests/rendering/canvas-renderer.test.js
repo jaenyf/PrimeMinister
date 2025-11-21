@@ -1,14 +1,16 @@
-import { createTestState } from "../mocks/state-mock.js";
+import { createGraphState } from "../../src/core/state.js";
 import { drawGraph, resetCanvasCache } from "../../src/rendering/canvas-renderer.js";
 import { createMockCanvas, createMockContext } from "../mocks/canvas-mock.js";
+import { queryUIMock } from "../mocks/ui-mock.js";
 
 
 describe("drawGraph", () => {
     it("clear and draw image", () => {
         // Arrange
-        const canvas = createMockCanvas();
-        const context = createMockContext();
-        const state = createTestState();
+        const state = createGraphState();
+        const mockedUI = queryUIMock(state);
+        const canvas = mockedUI.canvas;
+        const context = canvas.getContext("2d");
 
         state.nodes = [
             { x: 10, y: 10, isPrime: false },
@@ -22,7 +24,7 @@ describe("drawGraph", () => {
         resetCanvasCache();
 
         // Act
-        drawGraph(context, canvas);
+        drawGraph(context, canvas, state);
 
         // Assert
         expect(context.clearRect).toHaveBeenCalled();
@@ -33,9 +35,10 @@ describe("drawGraph", () => {
 describe("drawGraph", () => {
     it("draw edges", () => {
         // Arrange
-        const canvas = createMockCanvas();
-        const context = createMockContext();
-        const state = createTestState();
+        const state = createGraphState();
+        const mockedUI = queryUIMock(state);
+        const canvas = mockedUI.canvas;
+        const context = canvas.getContext("2d");
 
         const cachedCanvas = createMockCanvas();
         globalThis.document.createElement = (tagName) => {
@@ -56,7 +59,7 @@ describe("drawGraph", () => {
         resetCanvasCache();
 
         // Act
-        drawGraph(context, canvas);
+        drawGraph(context, canvas, state);
 
         // Assert
         const cachedContext = cachedCanvas.getContext("2d");
@@ -68,9 +71,10 @@ describe("drawGraph", () => {
 describe("drawGraph", () => {
     it("draw nodes", () => {
         // Arrange
-        const canvas = createMockCanvas();
-        const context = createMockContext();
-        const state = createTestState();
+        const state = createGraphState();
+        const mockedUI = queryUIMock(state);
+        const canvas = mockedUI.canvas;
+        const context = canvas.getContext("2d");
 
         const cachedCanvas = createMockCanvas();
         globalThis.document.createElement = (tagName) => {
@@ -91,7 +95,7 @@ describe("drawGraph", () => {
         resetCanvasCache();
 
         // Act
-        drawGraph(context, canvas);
+        drawGraph(context, canvas, state);
 
         // Assert
         const cachedContext = cachedCanvas.getContext("2d");

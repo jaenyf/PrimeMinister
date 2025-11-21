@@ -1,5 +1,3 @@
-import { state } from "../core/state.js";
-
 let cachedCanvas = null;
 let cachedZoom = 1;
 
@@ -8,9 +6,8 @@ export function resetCanvasCache() {
     cachedZoom = 0;     // force redraw
 }
 
-export function drawGraph(ctx, canvas) {
-
-    if (!cachedCanvas || cachedZoom !== state.zoom) {
+export function drawGraph(ctx, canvas, graphState) {
+    if (!cachedCanvas || cachedZoom !== graphState.zoom) {
         cachedCanvas = document.createElement("canvas");
         cachedCanvas.width = canvas.width;
         cachedCanvas.height = canvas.height;
@@ -19,12 +16,12 @@ export function drawGraph(ctx, canvas) {
         cctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Edges
-        for (let e of state.edges) {
+        for (let e of graphState.edges) {
             const bothPrime = e.from.isPrime && e.to.isPrime;
 
-            if (state.edgesDisplayType === 'Primes' && !bothPrime) continue;
-            if (state.edgesDisplayType === 'NonPrimes' && bothPrime) continue;
-            if (state.edgesDisplayType === 'None') continue;
+            if (graphState.edgesDisplayType === 'Primes' && !bothPrime) continue;
+            if (graphState.edgesDisplayType === 'NonPrimes' && bothPrime) continue;
+            if (graphState.edgesDisplayType === 'None') continue;
 
             cctx.beginPath();
             cctx.moveTo(e.from.x, e.from.y);
@@ -35,30 +32,30 @@ export function drawGraph(ctx, canvas) {
         }
 
         // Nodes
-        for (let node of state.nodes) {
-            if (state.nodesDisplayType === 'Primes' && !node.isPrime) continue;
-            if (state.nodesDisplayType === 'NonPrimes' && node.isPrime) continue;
-            if (state.nodesDisplayType === 'None') continue;
+        for (let node of graphState.nodes) {
+            if (graphState.nodesDisplayType === 'Primes' && !node.isPrime) continue;
+            if (graphState.nodesDisplayType === 'NonPrimes' && node.isPrime) continue;
+            if (graphState.nodesDisplayType === 'None') continue;
 
             cctx.beginPath();
-            cctx.arc(node.x, node.y, state.nodeRadius, 0, Math.PI * 2);
+            cctx.arc(node.x, node.y, graphState.nodeRadius, 0, Math.PI * 2);
             cctx.fillStyle = node.isPrime ? "#f80" : "#08f";
             cctx.fill();
 
             cctx.fillStyle = "white";
             cctx.font = "12px Arial";
-            cctx.fillText(node.value, node.x - state.nodeRadius / 2, node.y + 5);
+            cctx.fillText(node.value, node.x - graphState.nodeRadius / 2, node.y + 5);
         }
 
-        cachedZoom = state.zoom;
+        cachedZoom = graphState.zoom;
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(
         cachedCanvas,
-        state.panX,
-        state.panY,
-        cachedCanvas.width * state.zoom,
-        cachedCanvas.height * state.zoom
+        graphState.panX,
+        graphState.panY,
+        cachedCanvas.width * graphState.zoom,
+        cachedCanvas.height * graphState.zoom
     );
 }

@@ -1,13 +1,10 @@
-import { state } from "./state.js";
-
-export function arrangeNodes() {
-    const canvas = document.getElementById("graphCanvas");
-    if (!state.nodes.length) return;
+export function arrangeNodes(canvas, graphState) {
+    if (!graphState.nodes.length) return;
 
     const V_MARGIN = 50, H_MARGIN = 50;
     const levels = [];
 
-    const root = state.nodes[0];
+    const root = graphState.nodes[0];
     root.level = 0;
 
     const queue = [root];
@@ -42,12 +39,12 @@ export function arrangeNodes() {
     }
     assignX(root);
 
-    const xs = state.nodes.map(n => n.x);
+    const xs = graphState.nodes.map(n => n.x);
     const minX = Math.min(...xs);
     const maxX = Math.max(...xs);
     const scaleX = (canvas.width - 2 * H_MARGIN) / (maxX - minX || 1);
 
-    state.nodes.forEach(n =>
+    graphState.nodes.forEach(n =>
         n.x = H_MARGIN + (n.x - minX) * scaleX
     );
 }

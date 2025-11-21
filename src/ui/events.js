@@ -1,46 +1,16 @@
-import { state } from "../core/state.js";
 import { isMouseOnLine } from "../rendering/hit-test.js";
 import { zoomAt } from "../rendering/zoom.js";
 import { centerGraph } from "../rendering/center.js";
+import { GraphKind } from "../core/state.js";
 
-import { queryUI } from "./dom.js";
-
-export function setupEventHandlers(ui = queryUI(), stateParam) {
-    // Backwards-compatible: tests may call setupEventHandlers(canvas, state)
-    let uiObj;
-    if (ui && (ui instanceof HTMLCanvasElement || typeof ui.getContext === "function")) {
-        // If a bare canvas element is passed (legacy tests), avoid querying
-        // the document for other elements because test mocks may not provide them.
-        uiObj = {
-            canvas: ui,
-            ctx: ui.getContext ? ui.getContext("2d") : null,
-            tooltip: null,
-            startInput: { value: "", oninput: null },
-            endInput: { value: "", oninput: null },
-            typeSelect: { value: "", onchange: null },
-            nodesDisplayTypeSelect: { onchange: null },
-            edgesDisplayTypeSelect: { onchange: null },
-            zoomInBtn: { onclick: null },
-            zoomOutBtn: { onclick: null },
-            centerBtn: { onclick: null },
-            startMultiplierBtn: { onclick: null },
-            startDividerBtn: { onclick: null },
-            endMultiplierBtn: { onclick: null },
-            endDividerBtn: { onclick: null }
-        };
-    } else {
-        uiObj = ui || queryUI();
-    }
-
+export function setupEventHandlers(ui, graphState) {
     const {
         canvas, tooltip,
         startInput, endInput, typeSelect,
         nodesDisplayTypeSelect, edgesDisplayTypeSelect,
         zoomInBtn, zoomOutBtn, centerBtn,
         startMultiplierBtn, startDividerBtn, endMultiplierBtn, endDividerBtn
-    } = uiObj;
-
-    const localState = stateParam || state;
+    } = ui;
 
     // Resize
     if (canvas) {
@@ -49,97 +19,114 @@ export function setupEventHandlers(ui = queryUI(), stateParam) {
     }
 
     // setupEventHandlers
-
-
-
-
-
-
-
-
     // Schedule redraw
     function scheduleRedraw(graphChanged = false) {
-        localState.needsRedraw = true;
-        if (graphChanged) localState.graphDirty = true;
+        graphState.needsRedraw = true;
+        if (graphChanged) graphState.graphDirty = true;
     }
 
     // Buttons
     zoomInBtn.onclick = () => {
-        localState.manualTransform = true;
-        zoomAt(canvas.width / 2, canvas.height / 2, 1.1);
+        graphState.manualTransform = true;
+        zoomAt(canvas.width / 2, canvas.height / 2, 1.1, graphState);
         scheduleRedraw();
     };
 
     zoomOutBtn.onclick = () => {
-        localState.manualTransform = true;
-        zoomAt(canvas.width / 2, canvas.height / 2, 1 / 1.1);
+        graphState.manualTransform = true;
+        zoomAt(canvas.width / 2, canvas.height / 2, 1 / 1.1, graphState);
         scheduleRedraw();
     };
 
     centerBtn.onclick = () => {
-        localState.manualTransform = false;
-        centerGraph(canvas);
+        graphState.manualTransform = false;
+        centerGraph(canvas, graphState);
         scheduleRedraw();
     };
 
     // Inputs
-    [startInput, endInput].forEach(inp =>
-        inp.oninput = () => scheduleRedraw(true)
-    );
+    startInput.oninput = () => {
+        graphState.graphStartValue = +startInput.value;
+        scheduleRedraw(true);
+    }
 
-    typeSelect.onchange = () => scheduleRedraw(true);
+    endInput.oninput = () => {
+        graphState.graphEndValue = +endInput.value;
+        scheduleRedraw(true);
+    }
+
+    typeSelect.onchange = (e) => {
+        switch (e.target.value) {
+            case "Zero":
+                graphState.graphKind = GraphKind.Zero;
+                break;
+            case "Odd":
+                graphState.graphKind = GraphKind.Odd;
+                break;
+            case "Even":
+                graphState.graphKind = GraphKind.Even;
+                break;
+            default:
+                throw new Error("Unknown graph kind selected: " + e.target.value);
+        }
+        scheduleRedraw(true);
+    }
 
     startMultiplierBtn.onclick = () => {
         startInput.value = +startInput.value * 2;
+        graphState.graphStartValue = +startInput.value;
         scheduleRedraw(true);
     };
 
     startDividerBtn.onclick = () => {
         startInput.value = Math.floor(+startInput.value / 2);
+        graphState.graphStartValue = +startInput.value;
         scheduleRedraw(true);
     };
 
     endMultiplierBtn.onclick = () => {
         endInput.value = +endInput.value * 2;
+        graphState.graphEndValue = +endInput.value;
         scheduleRedraw(true);
     };
 
     endDividerBtn.onclick = () => {
         endInput.value = Math.floor(+endInput.value / 2);
+        graphState.graphEndValue = +endInput.value;
         scheduleRedraw(true);
     };
 
     nodesDisplayTypeSelect.onchange = (e) => {
-        localState.nodesDisplayType = e.target.value;
+        graphState.nodesDisplayType = e.target.value;
         scheduleRedraw(true);
     };
     edgesDisplayTypeSelect.onchange = (e) => {
-        localState.edgesDisplayType = e.target.value;
+        graphState.edgesDisplayType = e.target.value;
         scheduleRedraw(true);
     };
 
     // Mouse events
     canvas.onmousedown = (e) => {
-        localState.isPanning = true;
-        localState.panXStart = (e.clientX - localState.panX) / localState.zoom;
-        localState.panYStart = (e.clientY - localState.panY) / localState.zoom;
+        graphState.isPanning = true;
+        graphState.panXStart = (e.clientX - graphState.panX) / graphState.zoom;
+        graphState.panYStart = (e.clientY - graphState.panY) / graphState.zoom;
     };
 
-    canvas.onmouseup = () => localState.isPanning = false;
+    canvas.onmouseup = () => graphState.isPanning = false;
 
     canvas.onmousemove = (e) => {
-        const mx = (e.clientX - localState.panX) / localState.zoom;
-        const my = (e.clientY - localState.panY) / localState.zoom;
+        const mx = (e.clientX - graphState.panX) / graphState.zoom;
+        const my = (e.clientY - graphState.panY) / graphState.zoom;
 
-        if (localState.isPanning) {
-            localState.panX = e.clientX - localState.panXStart * localState.zoom;
-            localState.panY = e.clientY - localState.panYStart * localState.zoom;
-            localState.manualTransform = true;
+        if (graphState.isPanning) {
+            graphState.panX = e.clientX - graphState.panXStart * graphState.zoom;
+            graphState.panY = e.clientY - graphState.panYStart * graphState.zoom;
+            graphState.manualTransform = true;
         }
 
         let hovered = null;
-        for (let edge of localState.edges) {
-            if (isMouseOnLine(mx, my, edge.from.x, edge.from.y, edge.to.x, edge.to.y, localState.zoom)) {
+        for (let edge of graphState.edges) {
+            if (isMouseOnLine(mx, my, edge.from.x, edge.from.y, edge.to.x, edge.to.y, graphState.zoom)) {
                 hovered = edge;
                 break;
             }
@@ -163,8 +150,8 @@ export function setupEventHandlers(ui = queryUI(), stateParam) {
     canvas.onwheel = (e) => {
         e.preventDefault();
         const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
-        localState.manualTransform = true;
-        zoomAt(e.clientX, e.clientY, factor);
+        graphState.manualTransform = true;
+        zoomAt(e.clientX, e.clientY, factor, graphState);
         scheduleRedraw();
     };
 

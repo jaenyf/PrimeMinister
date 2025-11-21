@@ -1,11 +1,11 @@
 import { centerGraph } from "../../src/rendering/center.js";
 import { createMockCanvas } from "../mocks/canvas-mock.js";
-import { createTestState } from "../mocks/state-mock.js";
+import { createGraphState } from "../../src/core/state.js";
 
 describe("centerGraph", () => {
     it("computes pan and zoom", () => {
         // Arrange
-        const state = createTestState();
+        const state = createGraphState();
         state.zoom = 0;
         state.nodes = [
             { x: 0, y: 0 },
@@ -15,7 +15,7 @@ describe("centerGraph", () => {
         const canvas = createMockCanvas();
 
         // Act
-        centerGraph(canvas);
+        centerGraph(canvas, state);
 
         // Assert
         expect(state.zoom).toBeGreaterThan(0);

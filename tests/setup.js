@@ -1,2 +1,2 @@
-import { installMockDOM } from "./mocks/dom-mock.js";
-installMockDOM();
+// import { queryUIMock } from "./mocks/ui-mock.js";
+// const mockedUI = queryUIMock(state);

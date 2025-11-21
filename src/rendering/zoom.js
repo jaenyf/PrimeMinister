@@ -1,11 +1,9 @@
-import { state } from "../core/state.js";
+export function zoomAt(mouseX, mouseY, factor, graphState) {
+    const cursorX = (mouseX - graphState.panX) / graphState.zoom;
+    const cursorY = (mouseY - graphState.panY) / graphState.zoom;
 
-export function zoomAt(mouseX, mouseY, factor) {
-    const cursorX = (mouseX - state.panX) / state.zoom;
-    const cursorY = (mouseY - state.panY) / state.zoom;
+    graphState.zoom *= factor;
 
-    state.zoom *= factor;
-
-    state.panX = mouseX - cursorX * state.zoom;
-    state.panY = mouseY - cursorY * state.zoom;
+    graphState.panX = mouseX - cursorX * graphState.zoom;
+    graphState.panY = mouseY - cursorY * graphState.zoom;
 }

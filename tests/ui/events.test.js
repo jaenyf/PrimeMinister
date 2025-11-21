@@ -1,18 +1,16 @@
-import { createTestState } from "../mocks/state-mock.js";
+import { createGraphState } from "../../src/core/state.js";
 import { setupEventHandlers } from "../../src/ui/events.js";
+import { queryUIMock } from "../mocks/ui-mock.js";
 
 describe("events", () => {
     it("handles wheel zoom", () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = 800;
-        canvas.height = 600;
+        const state = createGraphState();
+        const mockedUi = queryUIMock(state);
+        mockedUi.canvas.width = 800;
+        mockedUi.canvas.height = 600;
+        setupEventHandlers(mockedUi, state);
 
-        document.body.append(canvas);
-
-        const state = createTestState();
-        setupEventHandlers(canvas, state);
-
-        canvas.dispatchEvent(new WheelEvent("wheel", { deltaY: -100 }));
+        mockedUi.canvas.dispatchEvent(new WheelEvent("wheel", { deltaY: -100 }));
 
         expect(state.zoom).toBeGreaterThan(1);
     });
