@@ -1,4 +1,4 @@
-import { isMouseOnLine } from "../rendering/hit-test.js";
+import { isMouseOnNode, isMouseOnEdge } from "../rendering/hit-test.js";
 import { zoomAt } from "../rendering/zoom.js";
 import { centerGraph } from "../rendering/center.js";
 import { GraphKind } from "../core/state.js";
@@ -124,25 +124,47 @@ export function setupEventHandlers(ui, graphState) {
             graphState.manualTransform = true;
         }
 
-        let hovered = null;
-        for (let edge of graphState.edges) {
-            if (isMouseOnLine(mx, my, edge.from.x, edge.from.y, edge.to.x, edge.to.y, graphState.zoom)) {
-                hovered = edge;
-                break;
+        let hoveredNode = null;
+        for (let node of graphState.nodes) {
+            if (isMouseOnNode(mx, my, node, graphState)) {
+                hoveredNode = node;
             }
         }
 
-        if (hovered) {
+        if (hoveredNode) {
             if (tooltip) {
                 tooltip.style.left = `${e.clientX + 10}px`;
                 tooltip.style.top = `${e.clientY + 10}px`;
-                tooltip.innerText = `${hovered.from.value} → ${hovered.to.value}`;
-                tooltip.classList.toggle("primes", hovered.from.isPrime && hovered.to.isPrime);
+                tooltip.innerHTML = `${hoveredNode.value} = ${hoveredNode.primesFactors.map(p => `${p.value}<sup>${p.power}</sup>`).join(" × ")}`;
+                tooltip.classList.toggle("primes", hoveredNode.isPrime);
                 tooltip.style.display = "block";
             }
         } else {
             if (tooltip) tooltip.style.display = "none";
         }
+
+        if (!hoveredNode) {
+            let hoveredEdge = null;
+            for (let edge of graphState.edges) {
+                if (isMouseOnEdge(mx, my, edge, graphState)) {
+                    hoveredEdge = edge;
+                    break;
+                }
+            }
+            if (hoveredEdge) {
+                if (tooltip) {
+                    tooltip.style.left = `${e.clientX + 10}px`;
+                    tooltip.style.top = `${e.clientY + 10}px`;
+                    tooltip.innerHTML = `${hoveredEdge.from.value} &rarr; ${hoveredEdge.to.value}`;
+                    tooltip.classList.toggle("primes", hoveredEdge.from.isPrime && hoveredEdge.to.isPrime);
+                    tooltip.style.display = "block";
+                }
+            } else {
+                if (tooltip) tooltip.style.display = "none";
+            }
+        }
+
+
 
         scheduleRedraw();
     };

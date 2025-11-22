@@ -1,4 +1,4 @@
-import { precomputePrimes, checkIsPrime } from "./prime-utils.js";
+import { precomputePrimes, checkIsPrime, getPrimesFactors } from "./prime-utils.js";
 import { arrangeNodes } from "./layout.js";
 import { GraphKind } from "./state.js";
 
@@ -29,6 +29,7 @@ export function generateGraph(canvas, graphState) {
         x: 0,
         y: 0,
         isPrime: checkIsPrime(value),
+        primesFactors: getPrimesFactors(value)
     });
 
     const valid = [];
