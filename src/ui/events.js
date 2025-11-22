@@ -122,6 +122,7 @@ export function setupEventHandlers(ui, graphState) {
             graphState.panX = e.clientX - graphState.panXStart * graphState.zoom;
             graphState.panY = e.clientY - graphState.panYStart * graphState.zoom;
             graphState.manualTransform = true;
+            scheduleRedraw();
         }
 
         let hoveredNode = null;
@@ -163,10 +164,6 @@ export function setupEventHandlers(ui, graphState) {
                 if (tooltip) tooltip.style.display = "none";
             }
         }
-
-
-
-        scheduleRedraw();
     };
 
     canvas.onwheel = (e) => {

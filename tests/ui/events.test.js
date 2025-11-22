@@ -15,3 +15,35 @@ describe("events", () => {
         expect(state.zoom).toBeGreaterThan(1);
     });
 });
+
+
+describe("events", () => {
+    it("mouse move when not panning does not schedule redrawn", () => {
+        const state = createGraphState();
+        const mockedUi = queryUIMock(state);
+        mockedUi.canvas.width = 800;
+        mockedUi.canvas.height = 600;
+        setupEventHandlers(mockedUi, state);
+        state.needsRedraw = false;
+
+        mockedUi.canvas.dispatchEvent(new MouseEvent("mousemove"));
+
+        expect(state.needsRedraw).toBe(false);
+    });
+});
+
+describe("events", () => {
+    it("mouse move when panning does schedule redrawn", () => {
+        const state = createGraphState();
+        const mockedUi = queryUIMock(state);
+        mockedUi.canvas.width = 800;
+        mockedUi.canvas.height = 600;
+        setupEventHandlers(mockedUi, state);
+        state.needsRedraw = false;
+        state.isPanning = true;
+
+        mockedUi.canvas.dispatchEvent(new MouseEvent("mousemove"));
+
+        expect(state.needsRedraw).toBe(true);
+    });
+});
