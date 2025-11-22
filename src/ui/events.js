@@ -135,7 +135,7 @@ export function setupEventHandlers(ui, graphState) {
             if (tooltip) {
                 tooltip.style.left = `${e.clientX + 10}px`;
                 tooltip.style.top = `${e.clientY + 10}px`;
-                tooltip.innerText = `Node : ${hoveredNode.value}`;
+                tooltip.innerHTML = `${hoveredNode.value} = ${hoveredNode.primesFactors.map(p => `${p.value}<sup>${p.power}</sup>`).join(" × ")}`;
                 tooltip.classList.toggle("primes", hoveredNode.isPrime);
                 tooltip.style.display = "block";
             }
