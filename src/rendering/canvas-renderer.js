@@ -12,7 +12,7 @@ export function resetCanvasCache() {
     _redrawInProgress = false;
 }
 
-function shouldRefreshCache(viewport) {
+function _shouldRefreshCache(viewport) {
     const c = _cachedVisibleArea;
     const EPS = 0.5; // tolerance
     return (
@@ -27,7 +27,7 @@ function shouldRefreshCache(viewport) {
 export function drawGraph(ctx, canvas, graphState) {
     // Only redraw the graph if it's not cached or zoom doesn't match
     const viewport = graphState.getVisibleArea(canvas);
-    if (shouldRefreshCache(viewport)) {
+    if (_shouldRefreshCache(viewport)) {
 
         if (_cachedCanvas.width !== canvas.width || _cachedCanvas.height !== canvas.height) {
             // Ensure cachedCanvas has correct dimensions
@@ -97,7 +97,7 @@ function _drawGraphToCanvas(context, canvas, graphState, visibleArea) {
 
     // Edges
     for (let edge of graphState.edges) {
-        if (!isEdgeInArea(edge, visibleArea)) continue;
+        if (!_isEdgeInArea(edge, visibleArea)) continue;
 
         const bothPrime = edge.from.isPrime && edge.to.isPrime;
         if (graphState.edgesDisplayType === 'Primes' && !bothPrime) continue;
@@ -114,7 +114,7 @@ function _drawGraphToCanvas(context, canvas, graphState, visibleArea) {
 
     // Nodes
     for (let node of graphState.nodes) {
-        if (!isNodeInArea(node, visibleArea, graphState)) continue;
+        if (!_isNodeInArea(node, visibleArea, graphState)) continue;
         if (graphState.nodesDisplayType === 'Primes' && !node.isPrime) continue;
         if (graphState.nodesDisplayType === 'NonPrimes' && node.isPrime) continue;
         if (graphState.nodesDisplayType === 'None') continue;
@@ -134,7 +134,7 @@ function _drawGraphToCanvas(context, canvas, graphState, visibleArea) {
 }
 
 // check whether a given edge is in a given area
-function isEdgeInArea(edge, viewport) {
+function _isEdgeInArea(edge, viewport) {
     const x1 = edge.from.x;
     const y1 = edge.from.y;
     const x2 = edge.to.x;
@@ -161,14 +161,14 @@ function isEdgeInArea(edge, viewport) {
     ];
 
     for (const re of rectEdges) {
-        if (segmentsIntersect(x1, y1, x2, y2, re.x1, re.y1, re.x2, re.y2)) return true;
+        if (_segmentsIntersect(x1, y1, x2, y2, re.x1, re.y1, re.x2, re.y2)) return true;
     }
 
     return false;
 }
 
 // Utility: check if two segments intersect
-function segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
+function _segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     function ccw(ax, ay, bx, by, cx, cy) {
         return (cy - ay) * (bx - ax) > (by - ay) * (cx - ax);
     }
@@ -177,7 +177,7 @@ function segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
 }
 
 // check whether a given node is in a given area
-function isNodeInArea(node, viewport, graphState) {
+function _isNodeInArea(node, viewport, graphState) {
     const pad = graphState.nodeRadius;
 
     return (
@@ -193,7 +193,7 @@ function isNodeInArea(node, viewport, graphState) {
 export function getNodeAt(mouseX, mouseY, canvas, graphState) {
     const viewport = graphState.getVisibleArea(canvas);
     for (let node of graphState.nodes) {
-        if (!isNodeInArea(node, viewport, graphState)) continue;
+        if (!_isNodeInArea(node, viewport, graphState)) continue;
 
         // Convert world coordinates to screen coordinates
         const nodeScreenX = (node.x - viewport.left) * graphState.zoom;
@@ -213,7 +213,7 @@ export function getNodeAt(mouseX, mouseY, canvas, graphState) {
 export function getEdgeAt(mouseX, mouseY, canvas, graphState) {
     const viewport = graphState.getVisibleArea(canvas);
     for (let edge of graphState.edges) {
-        if (!isEdgeInArea(edge, viewport)) continue;
+        if (!_isEdgeInArea(edge, viewport)) continue;
 
         const x1 = (edge.from.x - viewport.left) * graphState.zoom;
         const y1 = (edge.from.y - viewport.top) * graphState.zoom;
@@ -221,7 +221,7 @@ export function getEdgeAt(mouseX, mouseY, canvas, graphState) {
         const y2 = (edge.to.y - viewport.top) * graphState.zoom;
 
         // Distance from point to line segment
-        const dist = pointToSegmentDistance(mouseX, mouseY, x1, y1, x2, y2);
+        const dist = _pointToSegmentDistance(mouseX, mouseY, x1, y1, x2, y2);
         if (dist <= 5) { // 5px tolerance
             return edge;
         }
@@ -230,7 +230,7 @@ export function getEdgeAt(mouseX, mouseY, canvas, graphState) {
 }
 
 // Utility: distance from point (px, py) to segment (x1, y1)-(x2, y2)
-function pointToSegmentDistance(px, py, x1, y1, x2, y2) {
+function _pointToSegmentDistance(px, py, x1, y1, x2, y2) {
     const A = px - x1;
     const B = py - y1;
     const C = x2 - x1;
