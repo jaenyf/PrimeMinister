@@ -1,6 +1,5 @@
 let _cachedCanvas = _initializeCachedCanvas();
 let _cachedVisibleArea = { left: 0, top: 0, right: 0, bottom: 0 };
-let _isCanvasCached = false;
 let _redrawInProgress = false;
 
 function _initializeCachedCanvas() {
@@ -9,7 +8,6 @@ function _initializeCachedCanvas() {
 }
 
 export function resetCanvasCache() {
-    _isCanvasCached = false;
     _cachedVisibleArea = { left: 0, top: 0, right: 0, bottom: 0 }
     _redrawInProgress = false;
 }
@@ -68,7 +66,6 @@ function _redrawGraphAsync(ctx, canvas, graphState, viewport) {
         _cachedCanvas = cachedCanvas;
         _cachedVisibleArea = { ...viewport };
         _redrawInProgress = false;
-        _isCanvasCached = true;
 
         // Draw the updated cached canvas onto the visible canvas
         _swapBuffer(canvas, ctx, graphState);
