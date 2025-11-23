@@ -1,6 +1,6 @@
 import { GraphKind } from "../core/state.js";
 
-export function queryUI(graphSate) {
+export function queryUI() {
     const canvas = document.getElementById("graphCanvas");
     const ctx = canvas ? canvas.getContext("2d") : null;
 
@@ -27,19 +27,26 @@ export function queryUI(graphSate) {
         showSymmetryLineCheckbox: document.getElementById("showSymmetryLineCheckbox")
     };
 
-    graphSate.graphStartValue = parseInt(ui.startInput.value, 10) || 0;
-    graphSate.graphEndValue = parseInt(ui.endInput.value, 10) || 0;
-    graphSate.graphKind = (() => {
-        switch (ui.typeSelect.value) {
+    return ui;
+}
+
+export function initialize(app) {
+    const footer = document.getElementById("mainFooter");
+    footer.innerHTML = footer.innerHTML
+        .replace("${app.name}", app.name)
+        .replace("${app.version}", app.version);
+
+    app.graphState.graphStartValue = parseInt(app.ui.startInput.value, 10) || 0;
+    app.graphState.graphEndValue = parseInt(app.ui.endInput.value, 10) || 0;
+    app.graphState.graphKind = (() => {
+        switch (app.ui.typeSelect.value) {
             case "Zero": return GraphKind.Zero;
             case "Odd": return GraphKind.Odd;
             case "Even": return GraphKind.Even;
             default:
-                throw new Error("Unknown graph kind selected: " + ui.typeSelect.value);
+                throw new Error("Unknown graph kind selected: " + app.ui.typeSelect.value);
         }
     })();
-
-    return ui;
 }
 
 export default queryUI;

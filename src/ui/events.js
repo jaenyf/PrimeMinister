@@ -3,68 +3,60 @@ import { zoomAt } from "../rendering/zoom.js";
 import { centerGraph } from "../rendering/center.js";
 import { GraphKind } from "../core/state.js";
 
-export function setupEventHandlers(ui, graphState) {
-    const {
-        canvas, tooltip,
-        startInput, endInput, typeSelect,
-        nodesDisplayTypeSelect, edgesDisplayTypeSelect,
-        zoomInBtn, zoomOutBtn, centerBtn,
-        startMultiplierBtn, startDividerBtn, endMultiplierBtn, endDividerBtn
-    } = ui;
-
+export function setupEventHandlers(app) {
     // Resize
-    if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+    if (app.ui.canvas) {
+        app.ui.canvas.width = window.innerWidth;
+        app.ui.canvas.height = window.innerHeight;
     }
 
     // setupEventHandlers
     // Schedule redraw
     function scheduleRedraw(graphChanged = false) {
-        graphState.needsRedraw = true;
-        if (graphChanged) graphState.graphDirty = true;
+        app.graphState.needsRedraw = true;
+        if (graphChanged) app.graphState.graphDirty = true;
     }
 
     // Buttons
-    zoomInBtn.onclick = () => {
-        graphState.manualTransform = true;
-        zoomAt(canvas.width / 2, canvas.height / 2, 1.1, graphState);
+    app.ui.zoomInBtn.onclick = () => {
+        app.graphState.manualTransform = true;
+        zoomAt(app.ui.canvas.width / 2, app.ui.canvas.height / 2, 1.1, app.graphState);
         scheduleRedraw();
     };
 
-    zoomOutBtn.onclick = () => {
-        graphState.manualTransform = true;
-        zoomAt(canvas.width / 2, canvas.height / 2, 1 / 1.1, graphState);
+    app.ui.zoomOutBtn.onclick = () => {
+        app.graphState.manualTransform = true;
+        zoomAt(app.ui.canvas.width / 2, app.ui.canvas.height / 2, 1 / 1.1, app.graphState);
         scheduleRedraw();
     };
 
-    centerBtn.onclick = () => {
-        graphState.manualTransform = false;
-        centerGraph(canvas, graphState);
+    app.ui.centerBtn.onclick = () => {
+        app.graphState.manualTransform = false;
+        centerGraph(app.ui.canvas, app.graphState);
         scheduleRedraw();
     };
 
     // Inputs
-    startInput.oninput = () => {
-        graphState.graphStartValue = +startInput.value;
+    app.ui.startInput.oninput = () => {
+        app.graphState.graphStartValue = +app.ui.startInput.value;
         scheduleRedraw(true);
     }
 
-    endInput.oninput = () => {
-        graphState.graphEndValue = +endInput.value;
+    app.ui.endInput.oninput = () => {
+        app.graphState.graphEndValue = +app.ui.endInput.value;
         scheduleRedraw(true);
     }
 
-    typeSelect.onchange = (e) => {
+    app.ui.typeSelect.onchange = (e) => {
         switch (e.target.value) {
             case "Zero":
-                graphState.graphKind = GraphKind.Zero;
+                app.graphState.graphKind = GraphKind.Zero;
                 break;
             case "Odd":
-                graphState.graphKind = GraphKind.Odd;
+                app.graphState.graphKind = GraphKind.Odd;
                 break;
             case "Even":
-                graphState.graphKind = GraphKind.Even;
+                app.graphState.graphKind = GraphKind.Even;
                 break;
             default:
                 throw new Error("Unknown graph kind selected: " + e.target.value);
@@ -72,118 +64,118 @@ export function setupEventHandlers(ui, graphState) {
         scheduleRedraw(true);
     }
 
-    startMultiplierBtn.onclick = () => {
-        startInput.value = +startInput.value * 2;
-        graphState.graphStartValue = +startInput.value;
+    app.ui.startMultiplierBtn.onclick = () => {
+        app.ui.startInput.value = +app.ui.startInput.value * 2;
+        app.graphState.graphStartValue = +app.ui.startInput.value;
         scheduleRedraw(true);
     };
 
-    startDividerBtn.onclick = () => {
-        startInput.value = Math.floor(+startInput.value / 2);
-        graphState.graphStartValue = +startInput.value;
+    app.ui.startDividerBtn.onclick = () => {
+        app.ui.startInput.value = Math.floor(+app.ui.startInput.value / 2);
+        app.graphState.graphStartValue = +app.ui.startInput.value;
         scheduleRedraw(true);
     };
 
-    endMultiplierBtn.onclick = () => {
-        endInput.value = +endInput.value * 2;
-        graphState.graphEndValue = +endInput.value;
+    app.ui.endMultiplierBtn.onclick = () => {
+        app.ui.endInput.value = +app.ui.endInput.value * 2;
+        app.graphState.graphEndValue = +app.ui.endInput.value;
         scheduleRedraw(true);
     };
 
-    endDividerBtn.onclick = () => {
-        endInput.value = Math.floor(+endInput.value / 2);
-        graphState.graphEndValue = +endInput.value;
+    app.ui.endDividerBtn.onclick = () => {
+        app.ui.endInput.value = Math.floor(+app.ui.endInput.value / 2);
+        app.graphState.graphEndValue = +app.ui.endInput.value;
         scheduleRedraw(true);
     };
 
-    nodesDisplayTypeSelect.onchange = (e) => {
-        graphState.nodesDisplayType = e.target.value;
+    app.ui.nodesDisplayTypeSelect.onchange = (e) => {
+        app.graphState.nodesDisplayType = e.target.value;
         scheduleRedraw(true);
     };
-    edgesDisplayTypeSelect.onchange = (e) => {
-        graphState.edgesDisplayType = e.target.value;
+    app.ui.edgesDisplayTypeSelect.onchange = (e) => {
+        app.graphState.edgesDisplayType = e.target.value;
         scheduleRedraw(true);
     };
 
     // Mouse events
-    canvas.onmousedown = (e) => {
-        graphState.isPanning = true;
-        graphState.panXStart = (e.clientX - graphState.panX) / graphState.zoom;
-        graphState.panYStart = (e.clientY - graphState.panY) / graphState.zoom;
+    app.ui.canvas.onmousedown = (e) => {
+        app.graphState.isPanning = true;
+        app.graphState.panXStart = (e.clientX - app.graphState.panX) / app.graphState.zoom;
+        app.graphState.panYStart = (e.clientY - app.graphState.panY) / app.graphState.zoom;
     };
 
-    canvas.onmouseup = () => graphState.isPanning = false;
+    app.ui.canvas.onmouseup = () => app.graphState.isPanning = false;
 
-    canvas.onmousemove = (e) => {
-        const mx = (e.clientX - graphState.panX) / graphState.zoom;
-        const my = (e.clientY - graphState.panY) / graphState.zoom;
+    app.ui.canvas.onmousemove = (e) => {
+        const mx = (e.clientX - app.graphState.panX) / app.graphState.zoom;
+        const my = (e.clientY - app.graphState.panY) / app.graphState.zoom;
 
-        if (graphState.isPanning) {
-            graphState.panX = e.clientX - graphState.panXStart * graphState.zoom;
-            graphState.panY = e.clientY - graphState.panYStart * graphState.zoom;
-            graphState.manualTransform = true;
+        if (app.graphState.isPanning) {
+            app.graphState.panX = e.clientX - app.graphState.panXStart * app.graphState.zoom;
+            app.graphState.panY = e.clientY - app.graphState.panYStart * app.graphState.zoom;
+            app.graphState.manualTransform = true;
             scheduleRedraw();
         }
 
         let hoveredNode = null;
-        for (let node of graphState.nodes) {
-            if (isMouseOnNode(mx, my, node, graphState)) {
+        for (let node of app.graphState.nodes) {
+            if (isMouseOnNode(mx, my, node, app.graphState)) {
                 hoveredNode = node;
             }
         }
 
         if (hoveredNode) {
-            if (tooltip) {
-                tooltip.style.left = `${e.clientX + 10}px`;
-                tooltip.style.top = `${e.clientY + 10}px`;
-                tooltip.innerHTML = `${hoveredNode.value} = ${hoveredNode.primesFactors.map(p => `${p.value}<sup>${p.power}</sup>`).join(" × ")}`;
-                tooltip.classList.toggle("primes", hoveredNode.isPrime);
-                tooltip.style.display = "block";
+            if (app.ui.tooltip) {
+                app.ui.tooltip.style.left = `${e.clientX + 10}px`;
+                app.ui.tooltip.style.top = `${e.clientY + 10}px`;
+                app.ui.tooltip.innerHTML = `${hoveredNode.value} = ${hoveredNode.primesFactors.map(p => `${p.value}<sup>${p.power}</sup>`).join(" × ")}`;
+                app.ui.tooltip.classList.toggle("primes", hoveredNode.isPrime);
+                app.ui.tooltip.style.display = "block";
             }
         } else {
-            if (tooltip) tooltip.style.display = "none";
+            if (app.ui.tooltip) app.ui.tooltip.style.display = "none";
         }
 
         if (!hoveredNode) {
             let hoveredEdge = null;
-            for (let edge of graphState.edges) {
-                if (isMouseOnEdge(mx, my, edge, graphState)) {
+            for (let edge of app.graphState.edges) {
+                if (isMouseOnEdge(mx, my, edge, app.graphState)) {
                     hoveredEdge = edge;
                     break;
                 }
             }
             if (hoveredEdge) {
-                if (tooltip) {
-                    tooltip.style.left = `${e.clientX + 10}px`;
-                    tooltip.style.top = `${e.clientY + 10}px`;
-                    tooltip.innerHTML = `${hoveredEdge.from.value} &rarr; ${hoveredEdge.to.value}`;
-                    tooltip.classList.toggle("primes", hoveredEdge.from.isPrime && hoveredEdge.to.isPrime);
-                    tooltip.style.display = "block";
+                if (app.ui.tooltip) {
+                    app.ui.tooltip.style.left = `${e.clientX + 10}px`;
+                    app.ui.tooltip.style.top = `${e.clientY + 10}px`;
+                    app.ui.tooltip.innerHTML = `${hoveredEdge.from.value} &rarr; ${hoveredEdge.to.value}`;
+                    app.ui.tooltip.classList.toggle("primes", hoveredEdge.from.isPrime && hoveredEdge.to.isPrime);
+                    app.ui.tooltip.style.display = "block";
                 }
             } else {
-                if (tooltip) tooltip.style.display = "none";
+                if (app.ui.tooltip) tooltip.style.display = "none";
             }
         }
     };
 
-    canvas.onwheel = (e) => {
+    app.ui.canvas.onwheel = (e) => {
         e.preventDefault();
         const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
-        graphState.manualTransform = true;
-        zoomAt(e.clientX, e.clientY, factor, graphState);
+        app.graphState.manualTransform = true;
+        zoomAt(e.clientX, e.clientY, factor, app.graphState);
         scheduleRedraw();
     };
 
-    canvas.oncontextmenu = (e) => e.preventDefault();
+    app.ui.canvas.oncontextmenu = (e) => e.preventDefault();
 
     window.onresize = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        app.ui.canvas.width = window.innerWidth;
+        app.ui.canvas.height = window.innerHeight;
         scheduleRedraw(true);
     }
 
-    ui.showSymmetryLineCheckbox.onchange = (e) => {
-        graphState.showLineOfSymmetry = e.target.checked;
+    app.ui.showSymmetryLineCheckbox.onchange = (e) => {
+        app.graphState.showLineOfSymmetry = e.target.checked;
         scheduleRedraw(true);
     }
 }

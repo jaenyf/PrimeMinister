@@ -1,7 +1,7 @@
+import { GraphKind } from "../../src/core/state.js";
 import { createMockCanvas } from "./canvas-mock.js";
-// import { queryUI } from "../../src/ui/dom.js";
 
-export function queryUIMock(graphState) {
+export function queryUIMock() {
     const graphCanvasMock = createMockCanvas();
 
     // Keep references to the real DOM helpers so tests can still set
@@ -15,6 +15,10 @@ export function queryUIMock(graphState) {
 
         if (id === "graphCanvas") {
             return graphCanvasMock;
+        }
+
+        if (id === "mainFooter") {
+            return document.createElement("footer")
         }
 
         // If a test asks for other ids, return null rather than throwing
@@ -31,15 +35,13 @@ export function queryUIMock(graphState) {
         return realCreateElement(tagName);
     }
 
-    //const ui = queryUI(graphState);
-
     const uiObj = {
         canvas: graphCanvasMock,
         ctx: graphCanvasMock.getContext ? graphCanvasMock.getContext("2d") : null,
         tooltip: null,
         startInput: { value: "", oninput: null },
         endInput: { value: "", oninput: null },
-        typeSelect: { value: "", onchange: null },
+        typeSelect: { value: "Zero", onchange: null },
         nodesDisplayTypeSelect: { onchange: null },
         edgesDisplayTypeSelect: { onchange: null },
         zoomInBtn: { onclick: null },
@@ -51,8 +53,6 @@ export function queryUIMock(graphState) {
         endDividerBtn: { onclick: null },
         showSymmetryLineCheckbox: { checked: false, onchange: null }
     };
-
-    //ui.canvas = graphCanvasMock;
 
     return uiObj;
 }

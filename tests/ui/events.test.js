@@ -1,49 +1,50 @@
 import { createGraphState } from "../../src/core/state.js";
 import { setupEventHandlers } from "../../src/ui/events.js";
 import { queryUIMock } from "../mocks/ui-mock.js";
+import { createApp } from "../../src/core/app.js";
 
 describe("events", () => {
     it("handles wheel zoom", () => {
-        const state = createGraphState();
-        const mockedUi = queryUIMock(state);
+        const mockedUi = queryUIMock();
         mockedUi.canvas.width = 800;
         mockedUi.canvas.height = 600;
-        setupEventHandlers(mockedUi, state);
+        const app = createApp(mockedUi);
+        setupEventHandlers(app);
 
         mockedUi.canvas.dispatchEvent(new WheelEvent("wheel", { deltaY: -100 }));
 
-        expect(state.zoom).toBeGreaterThan(1);
+        expect(app.graphState.zoom).toBeGreaterThan(1);
     });
 });
 
 
 describe("events", () => {
     it("mouse move when not panning does not schedule redrawn", () => {
-        const state = createGraphState();
-        const mockedUi = queryUIMock(state);
+        const mockedUi = queryUIMock();
         mockedUi.canvas.width = 800;
         mockedUi.canvas.height = 600;
-        setupEventHandlers(mockedUi, state);
-        state.needsRedraw = false;
+        const app = createApp(mockedUi);
+        setupEventHandlers(app);
+        app.graphState.needsRedraw = false;
 
         mockedUi.canvas.dispatchEvent(new MouseEvent("mousemove"));
 
-        expect(state.needsRedraw).toBe(false);
+        expect(app.graphState.needsRedraw).toBe(false);
     });
 });
 
 describe("events", () => {
     it("mouse move when panning does schedule redrawn", () => {
-        const state = createGraphState();
-        const mockedUi = queryUIMock(state);
+        const mockedUi = queryUIMock();
         mockedUi.canvas.width = 800;
         mockedUi.canvas.height = 600;
-        setupEventHandlers(mockedUi, state);
-        state.needsRedraw = false;
-        state.isPanning = true;
+        const app = createApp(mockedUi);
+        setupEventHandlers(app);
+        app.graphState.needsRedraw = false;
+        app.graphState.isPanning = true;
 
         mockedUi.canvas.dispatchEvent(new MouseEvent("mousemove"));
 
-        expect(state.needsRedraw).toBe(true);
+        expect(app.graphState.needsRedraw).toBe(true);
     });
 });
